@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>INFORTECH — Lleva la Inteligencia Artificial a tu negocio</title>
+<style>
+  /* ─── RESET & BASE ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #030312;
+    --surface:  #0D0D1F;
+    --card:     rgba(255,255,255,0.04);
+    --border:   rgba(255,255,255,0.08);
+    --purple:   #7C3AED;
+    --purple-l: #9D5FFF;
+    --cyan:     #00D4FF;
+    --green:    #00E5A0;
+    --red:      #FF4C6A;
+    --white:    #FFFFFF;
+    --muted:    #8892A4;
+    --radius:   16px;
+    --glow-p:   rgba(124,58,237,0.35);
+    --glow-c:   rgba(0,212,255,0.25);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── UTILITY ─── */
+  .gradient-text {
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--purple-l) 60%, var(--cyan) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradMove 4s linear infinite;
+  }
+  @keyframes gradMove { to { background-position: 200% center; } }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.3);
+    color: var(--purple-l);
+  }
+  .tag::before { content: '●'; font-size: 7px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px; border-radius: 50px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .btn:hover::after { opacity: 1; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple) 0%, #5B21B6 100%);
+    color: #fff;
+    box-shadow: 0 0 30px var(--glow-p);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--glow-p); }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+  }
+  .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
+  .btn-cyan {
+    background: linear-gradient(135deg, var(--cyan) 0%, #0099CC 100%);
+    color: #030312;
+    font-weight: 700;
+    box-shadow: 0 0 30px var(--glow-c);
+  }
+  .btn-cyan:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--glow-c); }
+  .btn-wa {
+    background: #25D366; color: #fff; font-weight: 700;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  }
+  .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,211,102,0.5); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50%     { transform: translateY(-12px); }
+  }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ─── NAVBAR ─── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: rgba(3,3,18,0.8);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.3s;
+  }
+  .nav-logo {
+    font-size: 20px; font-weight: 800; letter-spacing: 0.04em;
+  }
+  .nav-logo span { color: var(--cyan); }
+  .nav-cta { display: none; }
+  @media (min-width: 640px) { .nav-cta { display: inline-flex; } }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative; min-height: 100svh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 100px 24px 60px;
+    overflow: hidden;
+  }
+  #particle-canvas {
+    position: absolute; inset: 0; z-index: 0;
+    pointer-events: none;
+  }
+  .hero-glow-1 {
+    position: absolute; width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%);
+    top: -100px; left: -150px; pointer-events: none;
+    animation: float 8s ease-in-out infinite;
+  }
+  .hero-glow-2 {
+    position: absolute; width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%);
+    bottom: 0; right: -100px; pointer-events: none;
+    animation: float 10s ease-in-out infinite reverse;
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 780px; }
+  .hero-eyebrow { margin-bottom: 20px; animation: fadeIn 0.6s ease both; }
+  .hero-title {
+    font-size: clamp(38px, 8vw, 80px);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-title em { font-style: normal; }
+  .cursor { display: inline-block; color: var(--cyan); animation: blink 0.8s infinite; }
+  .hero-sub {
+    font-size: clamp(15px, 2.5vw, 18px);
+    color: var(--muted); max-width: 560px; margin: 0 auto 36px;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .hero-actions {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.6s ease both;
+    margin-bottom: 48px;
+  }
+  .hero-chips {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    animation: fadeUp 0.8s 0.8s ease both;
+  }
+  .chip {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.04em;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+  }
+  .scroll-hint {
+    position: absolute; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted); letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fadeIn 1.5s 1.2s ease both;
+  }
+  .scroll-arrow { width: 24px; animation: float 2s ease-in-out infinite; }
+
+  /* ─── SECTIONS COMMON ─── */
+  section { padding: 80px 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-tag { margin-bottom: 16px; }
+  .section-title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800; letter-spacing: -0.02em;
+    line-height: 1.15; margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 16px; color: var(--muted); max-width: 560px;
+    margin-bottom: 56px;
+  }
+  .center { text-align: center; }
+  .section-sub.center { margin-left: auto; margin-right: auto; }
+
+  /* ─── BENEFIT STRIP ─── */
+  .strip {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px;
+  }
+  .strip-grid {
+    max-width: 1100px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  @media (min-width: 768px) {
+    .strip-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .strip-item { text-align: center; }
+  .strip-icon {
+    width: 48px; height: 48px; margin: 0 auto 12px;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .strip-label {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--white); margin-bottom: 4px;
+  }
+  .strip-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+  /* ─── SERVICES GRID ─── */
+  .services-grid {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .services-grid { grid-template-columns: repeat(3, 1fr); }
+    .service-card.featured { grid-column: span 2; }
+  }
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    backdrop-filter: blur(10px);
+  }
+  .service-card::before {
+    content: ''; position: absolute;
+    inset: 0; border-radius: var(--radius);
+    background: linear-gradient(135deg, transparent 60%, var(--glow-p) 100%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .service-card:hover { transform: translateY(-4px); }
+  .service-card:hover::before { opacity: 1; }
+  .service-card.featured {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(0,212,255,0.06) 100%);
+    border-color: rgba(124,58,237,0.3);
+  }
+  .service-card.featured:hover { border-color: var(--purple); box-shadow: 0 20px 60px var(--glow-p); }
+  .service-card:hover:not(.featured) { border-color: rgba(0,212,255,0.3); box-shadow: 0 10px 40px var(--glow-c); }
+  .service-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 16px;
+  }
+  .icon-purple { background: rgba(124,58,237,0.2); }
+  .icon-cyan   { background: rgba(0,212,255,0.15); }
+  .icon-green  { background: rgba(0,229,160,0.15); }
+  .icon-red    { background: rgba(255,76,106,0.15); }
+  .icon-white  { background: rgba(255,255,255,0.08); }
+  .service-badge {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.4);
+    color: var(--purple-l);
+  }
+  .service-title {
+    font-size: 18px; font-weight: 700; margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .featured .service-title { font-size: 22px; }
+  .service-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+  .service-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .service-tag {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,255,255,0.06); color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .key-idea {
+    margin-top: 20px; padding: 12px 16px;
+    border-left: 2px solid var(--cyan);
+    background: rgba(0,212,255,0.06);
+    border-radius: 0 8px 8px 0;
+    font-size: 13px; color: var(--cyan); font-style: italic;
+  }
+
+  /* ─── METHODOLOGY ─── */
+  .method-section { background: var(--surface); }
+  .method-steps {
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .method-steps { grid-template-columns: repeat(5, 1fr); }
+  }
+  .method-step {
+    position: relative; padding: 24px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .method-step:hover { border-color: var(--purple-l); transform: translateY(-4px); }
+  .method-num {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--cyan); margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .method-name {
+    font-size: 18px; font-weight: 800; margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--muted) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .method-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .method-connector {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .method-connector {
+      display: block; position: absolute;
+      top: 50%; right: -9px;
+      width: 18px; height: 18px;
+      border-right: 2px solid var(--purple);
+      border-top: 2px solid var(--purple);
+      transform: translateY(-50%) rotate(45deg);
+      z-index: 1;
+    }
+    .method-step:last-child .method-connector { display: none; }
+  }
+
+  /* ─── STATS ─── */
+  .stats-grid {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 48px;
+  }
+  @media (min-width: 640px) {
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px 20px; text-align: center;
+    transition: border-color 0.3s;
+  }
+  .stat-card:hover { border-color: var(--cyan); }
+  .stat-num {
+    font-size: 36px; font-weight: 900; letter-spacing: -0.03em;
+    display: block;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* ─── DIAGNOSTIC CTA ─── */
+  .diag-section {
+    background: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(0,212,255,0.04) 100%);
+    border-top: 1px solid rgba(124,58,237,0.2);
+    border-bottom: 1px solid rgba(124,58,237,0.2);
+  }
+  .diag-card {
+    max-width: 760px; margin: 0 auto; text-align: center;
+  }
+  .diag-steps {
+    display: grid; gap: 12px;
+    grid-template-columns: 1fr;
+    margin: 36px 0; text-align: left;
+  }
+  @media (min-width: 640px) {
+    .diag-steps { grid-template-columns: repeat(3, 1fr); }
+  }
+  .diag-step {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .diag-step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+  .diag-step-title { font-size: 14px; font-weight: 700; }
+  .diag-step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .diag-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+  /* ─── WHY ─── */
+  .why-grid {
+    display: grid; gap: 24px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .why-grid { grid-template-columns: 1fr 1fr; align-items: center; }
+  }
+  .why-points { display: flex; flex-direction: column; gap: 20px; }
+  .why-point {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.3s;
+  }
+  .why-point:hover { border-color: rgba(0,212,255,0.3); }
+  .why-point-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+  }
+  .why-point-text h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .why-point-text p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .why-visual {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    text-align: center;
+  }
+  .why-visual-logo {
+    font-size: 48px; font-weight: 900; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .why-visual-logo span { color: var(--cyan); }
+  .why-since {
+    font-size: 13px; color: var(--muted); margin-bottom: 28px;
+    border-bottom: 1px solid var(--border); padding-bottom: 28px;
+  }
+  .why-pillars { display: flex; flex-direction: column; gap: 10px; }
+  .why-pillar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .why-pillar span:first-child { font-size: 14px; font-weight: 600; }
+  .why-pillar-bar {
+    height: 4px; border-radius: 2px; flex: 1; margin: 0 16px;
+    background: rgba(255,255,255,0.06);
+    position: relative; overflow: hidden;
+  }
+  .why-pillar-fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--purple) 0%, var(--cyan) 100%);
+    animation: barGrow 1.5s ease both;
+    transform-origin: left;
+  }
+  @keyframes barGrow { from { width: 0; } }
+  .why-pillar-val { font-size: 13px; color: var(--cyan); font-weight: 700; }
+
+  /* ─── FINAL CTA ─── */
+  .final-cta {
+    text-align: center; padding: 100px 24px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.15) 0%, transparent 70%);
+  }
+  .final-cta .section-title { font-size: clamp(32px, 6vw, 60px); margin-bottom: 20px; }
+  .final-cta .section-sub { max-width: 520px; margin: 0 auto 48px; }
+  .final-actions {
+    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px; text-align: center;
+    font-size: 13px; color: var(--muted);
+  }
+  footer strong { color: var(--white); }
+
+  /* ─── FLOATING WA ─── */
+  .wa-float {
+    position: fixed; bottom: 24px; right: 24px; z-index: 99;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #25D366;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.5);
+    cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+    animation: float 4s ease-in-out infinite;
+  }
+  .wa-float:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(37,211,102,0.6); }
+  .wa-float svg { width: 28px; height: 28px; fill: white; }
+  .wa-tooltip {
+    position: fixed; bottom: 90px; right: 24px; z-index: 99;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 13px; max-width: 200px; text-align: right;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .wa-float:hover + .wa-tooltip,
+  .wa-tooltip:hover { opacity: 1; pointer-events: auto; }
+
+  /* ─── QR BADGE ─── */
+  .qr-badge {
+    display: inline-flex; flex-direction: column; align-items: center;
+    gap: 8px; padding: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-top: 24px;
+  }
+  .qr-box {
+    width: 80px; height: 80px; border-radius: 8px;
+    background: white; padding: 6px;
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 2px;
+  }
+  .qr-px { background: #030312; border-radius: 1px; }
+  .qr-px.w { background: white; }
+  .qr-label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    height: 1px; background: var(--border);
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  /* ─── MOBILE NAV BOTTOM ─── */
+  .mob-cta {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 98; padding: 12px 16px;
+    background: rgba(13,13,31,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px;
+  }
+  .mob-cta .btn { flex: 1; justify-content: center; font-size: 14px; padding: 12px 16px; }
+  @media (min-width: 768px) { .mob-cta { display: none; } }
+
+  /* Body padding for mobile CTA bar */
+  @media (max-width: 767px) {
+    body { padding-bottom: 70px; }
+    .wa-float { bottom: 90px; }
+    .wa-tooltip { bottom: 155px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="nav">
+  <div class="nav-logo">INFOR<span>TECH</span></div>
+  <a href="#diagnostico" class="btn btn-primary nav-cta" style="padding:10px 20px; font-size:13px;">
+    Diagnóstico gratuito →
+  </a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="inicio">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="tag">Proyecto Fénix · Experiencia de Networking</span>
+    </div>
+
+    <h1 class="hero-title">
+      Lleva la <em class="gradient-text">Inteligencia Artificial</em><br>
+      a tu negocio<span class="cursor">_</span>
+    </h1>
+
+    <p class="hero-sub">
+      Identificamos dónde la IA puede reducir costos, ahorrar tiempo y mejorar la productividad.
+      Y tenemos la experiencia para llevarlo desde la estrategia hasta la operación.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#diagnostico" class="btn btn-primary">
+        ✦ Descubre oportunidades de IA
+      </a>
+      <a href="#agenda" class="btn btn-outline">
+        Agenda 30 minutos →
+      </a>
+    </div>
+
+    <div class="hero-chips">
+      <span class="chip">IA & Automatización</span>
+      <span class="chip">Transformación Digital</span>
+      <span class="chip">Data & BI</span>
+      <span class="chip">Ciberseguridad</span>
+      <span class="chip">Infraestructura</span>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Desliza</span>
+    <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ─── BENEFIT STRIP ─── -->
+<div class="strip">
+  <div class="strip-grid">
+    <div class="strip-item reveal">
+      <div class="strip-icon">🚀</div>
+      <div class="strip-label">Automatiza</div>
+      <div class="strip-desc">Reduce tareas manuales con IA y automatización</div>
+    </div>
+    <div class="strip-item reveal reveal-delay-1">
+      <div class="strip-icon">📊</div>
+      <div class="strip-label">Decide mejor</div>
+      <div class="strip-desc">Convierte datos en información útil</div>
+    </div>
+    <div class="strip-item reveal reveal-delay-2">
+      <div class="strip-icon">🛡️</div>
+      <div class="strip-label">Protege</div>
+      <div class="strip-desc">Fortalece la continuidad de tu operación</div>
+    </div>
+    <div class="strip-item reveal reveal-delay-3">
+      <div class="strip-icon">☁️</div>
+      <div class="strip-label">Moderniza</div>
+      <div class="strip-desc">Infraestructura preparada para el crecimiento</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SERVICES ─── -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-tag reveal"><span class="tag">Capacidades</span></div>
+    <h2 class="section-title reveal reveal-delay-1">
+      Tecnología que genera<br>
+      <span class="gradient-text">resultados de negocio</span>
+    </h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Cinco áreas de especialidad integradas para acompañarte desde el diagnóstico hasta la operación.
+    </p>
+
+    <div class="services-grid">
+
+      <!-- AI FEATURED -->
+      <div class="service-card featured reveal">
+        <span class="service-badge">★ Servicio Insignia</span>
+        <div class="service-icon icon-purple">🤖</div>
+        <h3 class="service-title">AI & Automation</h3>
+        <p class="service-desc">
+          Lleva la Inteligencia Artificial de la conversación a la operación. Identificamos procesos donde la IA genera resultados concretos y acompañamos desde el diagnóstico hasta la implementación.
+        </p>
+        <div class="service-tags">
+          <span class="service-tag">Diagnóstico de IA</span>
+          <span class="service-tag">IA generativa</span>
+          <span class="service-tag">Microsoft Copilot</span>
+          <span class="service-tag">Agentes de IA</span>
+          <span class="service-tag">Automatización documental</span>
+          <span class="service-tag">Integraciones empresariales</span>
+        </div>
+        <div class="key-idea">No implementamos IA por tendencia. La aplicamos donde puede generar valor.</div>
+      </div>
+
+      <!-- Digital Transformation -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon icon-cyan">🗺️</div>
+        <h3 class="service-title">Digital Transformation</h3>
+        <p class="service-desc">Evaluamos tu situación tecnológica y construimos una hoja de ruta alineada con tus objetivos de negocio.</p>
+        <div class="service-tags">
+          <span class="service-tag">Diagnóstico tecnológico</span>
+          <span class="service-tag">Roadmap</span>
+          <span class="service-tag">CIO as a Service</span>
+          <span class="service-tag">Gobierno de TI</span>
+        </div>
+        <div class="key-idea">Primero entendemos el negocio. Después diseñamos la tecnología.</div>
+      </div>
+
+      <!-- Data & BI -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon icon-green">📈</div>
+        <h3 class="service-title">Data & Business Intelligence</h3>
+        <p class="service-desc">Transformamos información dispersa en indicadores que permiten entender qué está sucediendo.</p>
+        <div class="service-tags">
+          <span class="service-tag">Power BI</span>
+          <span class="service-tag">Dashboards ejecutivos</span>
+          <span class="service-tag">KPIs</span>
+          <span class="service-tag">Automatización de reportes</span>
+        </div>
+        <div class="key-idea">De datos dispersos a decisiones inteligentes.</div>
+      </div>
+
+      <!-- Cybersecurity -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon icon-red">🔐</div>
+        <h3 class="service-title">Cybersecurity & Business Continuity</h3>
+        <p class="service-desc">La ciberseguridad es un riesgo empresarial. Reducimos la exposición y mejoramos la capacidad de recuperación.</p>
+        <div class="service-tags">
+          <span class="service-tag">Evaluaciones de seguridad</span>
+          <span class="service-tag">Firewalls</span>
+          <span class="service-tag">Respaldos</span>
+          <span class="service-tag">Recuperación ante desastres</span>
+          <span class="service-tag">Microsoft 365 Security</span>
+        </div>
+        <div class="key-idea">Preparada para prevenir, y para continuar operando.</div>
+      </div>
+
+      <!-- Infrastructure -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon icon-white">⚡</div>
+        <h3 class="service-title">Digital Infrastructure & Managed Services</h3>
+        <p class="service-desc">Diseñamos, implementamos y administramos infraestructura tecnológica segura, disponible y escalable.</p>
+        <div class="service-tags">
+          <span class="service-tag">Cloud</span>
+          <span class="service-tag">Microsoft 365</span>
+          <span class="service-tag">Redes & Conectividad</span>
+          <span class="service-tag">Servicios administrados</span>
+          <span class="service-tag">Soporte especializado</span>
+        </div>
+        <div class="key-idea">Nosotros administramos la tecnología. Tú concéntrate en tu negocio.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── METHODOLOGY ─── -->
+<section class="method-section" id="metodologia">
+  <div class="container">
+    <div class="center">
+      <div class="section-tag reveal" style="display:inline-block; margin-bottom:16px;"><span class="tag">Metodología propia</span></div>
+      <h2 class="section-title reveal reveal-delay-1">
+        INFORTECH <span class="gradient-text">EVOLVE™</span>
+      </h2>
+      <p class="section-sub center reveal reveal-delay-2">
+        Un proceso probado para transformar tecnología en resultados de negocio medibles.
+      </p>
+    </div>
+
+    <div class="method-steps">
+      <div class="method-step reveal">
+        <div class="method-connector"></div>
+        <div class="method-num">01 · Discover</div>
+        <div class="method-name">Discover</div>
+        <div class="method-desc">Entendemos el negocio y sus objetivos estratégicos.</div>
+      </div>
+      <div class="method-step reveal reveal-delay-1">
+        <div class="method-connector"></div>
+        <div class="method-num">02 · Assess</div>
+        <div class="method-name">Assess</div>
+        <div class="method-desc">Evaluamos tecnología, procesos, riesgos y oportunidades.</div>
+      </div>
+      <div class="method-step reveal reveal-delay-2">
+        <div class="method-connector"></div>
+        <div class="method-num">03 · Design</div>
+        <div class="method-name">Design</div>
+        <div class="method-desc">Construimos la estrategia y el roadmap priorizado.</div>
+      </div>
+      <div class="method-step reveal reveal-delay-3">
+        <div class="method-connector"></div>
+        <div class="method-num">04 · Transform</div>
+        <div class="method-name">Transform</div>
+        <div class="method-desc">Implementamos las soluciones priorizadas con acompañamiento.</div>
+      </div>
+      <div class="method-step reveal reveal-delay-4">
+        <div class="method-num">05 · Optimize</div>
+        <div class="method-name">Optimize</div>
+        <div class="method-desc">Medimos resultados y mejoramos continuamente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DIAGNOSTIC ─── -->
+<section class="diag-section" id="diagnostico">
+  <div class="container">
+    <div class="diag-card">
+      <div class="section-tag reveal" style="display:inline-block; margin-bottom:16px;">
+        <span class="tag">Producto de entrada</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">
+        ¿No sabes por dónde empezar?<br>
+        <span class="gradient-text">Ese puede ser el primer paso.</span>
+      </h2>
+      <p class="section-sub center reveal reveal-delay-2">
+        Realizamos un diagnóstico ejecutivo para identificar oportunidades y prioridades
+        en Tecnología, Ciberseguridad, Datos, Procesos e Inteligencia Artificial.
+      </p>
+
+      <div class="diag-steps">
+        <div class="diag-step reveal">
+          <div class="diag-step-num">1</div>
+          <div class="diag-step-title">Conversación inicial</div>
+          <div class="diag-step-desc">30 minutos para entender tu empresa, retos y objetivos.</div>
+        </div>
+        <div class="diag-step reveal reveal-delay-1">
+          <div class="diag-step-num">2</div>
+          <div class="diag-step-title">Diagnóstico 360°</div>
+          <div class="diag-step-desc">Evaluación en IA, datos, ciberseguridad, procesos e infraestructura.</div>
+        </div>
+        <div class="diag-step reveal reveal-delay-2">
+          <div class="diag-step-num">3</div>
+          <div class="diag-step-title">Roadmap Ejecutivo</div>
+          <div class="diag-step-desc">Entregamos un plan con prioridades claras y siguientes pasos.</div>
+        </div>
+      </div>
+
+      <div class="diag-actions reveal">
+        <a href="https://wa.me/522221353989?text=Quiero%20solicitar%20un%20diagnóstico%20inicial" class="btn btn-cyan">
+          ✦ Solicitar diagnóstico inicial
+        </a>
+        <a href="#agenda" class="btn btn-outline">
+          Agendar conversación →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY INFORTECH ─── -->
+<section id="nosotros">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-tag reveal" style="margin-bottom:16px;"><span class="tag">¿Por qué Infortech?</span></div>
+        <h2 class="section-title reveal reveal-delay-1">
+          Experiencia desde 2015.<br>
+          <span class="gradient-text">Visión para lo que viene.</span>
+        </h2>
+        <p class="section-sub reveal reveal-delay-2" style="margin-bottom:32px;">
+          Comenzamos en infraestructura y seguridad. Hoy acompañamos a las empresas en la era de la IA.
+          No queremos ser otro proveedor — queremos ser tu socio tecnológico.
+        </p>
+
+        <div class="why-points">
+          <div class="why-point reveal reveal-delay-1">
+            <div class="why-point-icon icon-purple">🎯</div>
+            <div class="why-point-text">
+              <h4>Visión de negocio, no solo de TI</h4>
+              <p>Primero entendemos tus objetivos. La tecnología viene después.</p>
+            </div>
+          </div>
+          <div class="why-point reveal reveal-delay-2">
+            <div class="why-point-icon icon-cyan">🤝</div>
+            <div class="why-point-text">
+              <h4>Acompañamiento de principio a fin</h4>
+              <p>Estrategia, implementación y operación bajo un mismo socio.</p>
+            </div>
+          </div>
+          <div class="why-point reveal reveal-delay-3">
+            <div class="why-point-icon icon-green">✅</div>
+            <div class="why-point-text">
+              <h4>IA que genera valor real</h4>
+              <p>No implementamos por tendencia. La aplicamos donde tiene impacto medible.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <div class="why-visual">
+          <div class="why-visual-logo">INFOR<span>TECH</span></div>
+          <div class="why-since">Transformamos tecnología en resultados de negocio · Desde 2015</div>
+          <div class="why-pillars">
+            <div class="why-pillar">
+              <span>IA & Automatización</span>
+              <div class="why-pillar-bar"><div class="why-pillar-fill" style="width:95%"></div></div>
+              <span class="why-pillar-val">Core</span>
+            </div>
+            <div class="why-pillar">
+              <span>Transformación Digital</span>
+              <div class="why-pillar-bar"><div class="why-pillar-fill" style="width:88%"></div></div>
+              <span class="why-pillar-val">●●●●</span>
+            </div>
+            <div class="why-pillar">
+              <span>Data & BI</span>
+              <div class="why-pillar-bar"><div class="why-pillar-fill" style="width:82%"></div></div>
+              <span class="why-pillar-val">●●●●</span>
+            </div>
+            <div class="why-pillar">
+              <span>Ciberseguridad</span>
+              <div class="why-pillar-bar"><div class="why-pillar-fill" style="width:90%"></div></div>
+              <span class="why-pillar-val">●●●●</span>
+            </div>
+            <div class="why-pillar">
+              <span>Infraestructura</span>
+              <div class="why-pillar-bar"><div class="why-pillar-fill" style="width:85%"></div></div>
+              <span class="why-pillar-val">●●●●</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR placeholder -->
+        <div class="qr-badge" style="width:100%; margin-top:16px;">
+          <div style="font-size:12px; font-weight:600; color:var(--muted); letter-spacing:0.05em; text-transform:uppercase;">Escanea para explorar</div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div style="width:72px; height:72px; background:white; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:8px;">
+              <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                <!-- QR finder patterns -->
+                <rect x="5" y="5" width="35" height="35" rx="3" fill="#030312"/>
+                <rect x="10" y="10" width="25" height="25" rx="2" fill="white"/>
+                <rect x="15" y="15" width="15" height="15" rx="1" fill="#030312"/>
+                <rect x="60" y="5" width="35" height="35" rx="3" fill="#030312"/>
+                <rect x="65" y="10" width="25" height="25" rx="2" fill="white"/>
+                <rect x="70" y="15" width="15" height="15" rx="1" fill="#030312"/>
+                <rect x="5" y="60" width="35" height="35" rx="3" fill="#030312"/>
+                <rect x="10" y="65" width="25" height="25" rx="2" fill="white"/>
+                <rect x="15" y="70" width="15" height="15" rx="1" fill="#030312"/>
+                <!-- Data modules (simplified) -->
+                <rect x="45" y="5" width="8" height="8" fill="#030312"/>
+                <rect x="55" y="5" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="15" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="25" width="8" height="8" fill="#030312"/>
+                <rect x="55" y="25" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="45" width="8" height="8" fill="#030312"/>
+                <rect x="55" y="45" width="8" height="8" fill="#030312"/>
+                <rect x="65" y="45" width="8" height="8" fill="#030312"/>
+                <rect x="75" y="45" width="8" height="8" fill="#030312"/>
+                <rect x="85" y="45" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="55" width="8" height="8" fill="#030312"/>
+                <rect x="65" y="55" width="8" height="8" fill="#030312"/>
+                <rect x="85" y="55" width="8" height="8" fill="#030312"/>
+                <rect x="55" y="65" width="8" height="8" fill="#030312"/>
+                <rect x="75" y="65" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="75" width="8" height="8" fill="#030312"/>
+                <rect x="65" y="75" width="8" height="8" fill="#030312"/>
+                <rect x="45" y="85" width="8" height="8" fill="#030312"/>
+                <rect x="55" y="85" width="8" height="8" fill="#030312"/>
+                <rect x="75" y="85" width="8" height="8" fill="#030312"/>
+                <rect x="85" y="85" width="8" height="8" fill="#030312"/>
+              </svg>
+            </div>
+            <div style="text-align:left;">
+              <div style="font-size:13px; font-weight:700;">infortech.mx/ai</div>
+              <div style="font-size:11px; color:var(--muted);">Landing Proyecto Fénix</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FINAL CTA ─── -->
+<section class="final-cta" id="agenda">
+  <div class="container">
+    <div class="section-tag reveal" style="display:inline-block; margin-bottom:20px;">
+      <span class="tag">Hablemos</span>
+    </div>
+    <h2 class="section-title reveal reveal-delay-1">
+      No necesitas comenzar<br>con un gran proyecto.
+    </h2>
+    <p class="section-sub reveal reveal-delay-2">
+      Comencemos con una conversación de 30 minutos para entender dónde estás,
+      qué problemas quieres resolver y dónde existen oportunidades reales.
+    </p>
+    <div class="final-actions reveal reveal-delay-3">
+      <a href="https://wa.me/522221353989?text=Hola,%20me%20interesa%20agendar%20una%20conversación%20con%20Infortech" class="btn btn-wa">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Escribir por WhatsApp
+      </a>
+      <a href="https://calendly.com/infortech" class="btn btn-primary" target="_blank">
+        📅 Agendar reunión de 30 min
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <strong>INFORTECH</strong> — Transformamos tecnología en resultados de negocio.
+  <span style="color:var(--muted); margin: 0 8px">·</span>
+  <span style="color:var(--muted)">Desde 2015</span>
+</footer>
+
+<!-- ─── FLOATING WHATSAPP ─── -->
+<a href="https://wa.me/522221353989?text=Hola,%20me%20interesa%20hablar%20con%20Infortech" class="wa-float" target="_blank">
+  <svg viewBox="0 0 24 24">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+<div class="wa-tooltip">
+  Escríbenos por WhatsApp y te respondemos en minutos 👋
+</div>
+
+<!-- ─── MOBILE BOTTOM CTA ─── -->
+<div class="mob-cta">
+  <a href="https://wa.me/522221353989" class="btn btn-wa" style="gap:6px;">
+    <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;flex-shrink:0">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    WhatsApp
+  </a>
+  <a href="#diagnostico" class="btn btn-primary">
+    ✦ Diagnóstico gratis
+  </a>
+</div>
+
+<!-- ─── SCRIPTS ─── -->
+<script>
+// ── PARTICLE NEURAL NETWORK ──────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+  const N = 60;
+  const CONNECT = 130;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.r  = Math.random() * 1.5 + 0.5;
+      // pick color: purple or cyan
+      this.col = Math.random() < 0.5
+        ? `rgba(124,58,237,`
+        : `rgba(0,212,255,`;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = this.col + '0.7)';
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    particles = [];
+    for (let i = 0; i < N; i++) particles.push(new Particle());
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    // connections
+    for (let i = 0; i < N; i++) {
+      for (let j = i+1; j < N; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < CONNECT) {
+          const alpha = (1 - d/CONNECT) * 0.25;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(124,58,237,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    animId = requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  resize(); init(); frame();
+})();
+
+// ── SCROLL REVEAL ────────────────────────────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => obs.observe(el));
+
+// ── NAVBAR SCROLL ────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('.nav');
+  nav.style.background = window.scrollY > 40
+    ? 'rgba(3,3,18,0.98)' : 'rgba(3,3,18,0.8)';
+});
+
+// ── TYPING EFFECT ────────────────────────────────────────────────────────
+// Already set as static; cursor blinks via CSS
+
+// ── SMOOTH ANCHOR ────────────────────────────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
